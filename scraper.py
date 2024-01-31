@@ -79,6 +79,11 @@ def _extracted_from_startScraping_8(chrome_options):
                 except Exception as e:
                     print(e)
                 #print("{publication_type:",publication_type,",author_name:",author_name,",title:",title,",publication_date:",publication_date,",details:",details,"}")
+                existing_data = pd.read_excel('article.xlsx')
+                new_data={"publication_type":[publication_type],"author_name":[author_name],"publication_date":[publication_date],"title":[title],"details":[details]}
+                dataframe=pd.DataFrame(new_data)
+                updated_data = pd.concat([existing_data, dataframe])
+                updated_data.to_excel("article.xlsx",index=False)
                 query=f"INSERT INTO article (publication_type,author_name,publication_date,title,details) VALUES (%s,%s,%s,%s,%s);"
                 try:
                     cursor.execute(query,(publication_type,author_name,publication_date,title,details))
@@ -89,6 +94,8 @@ def _extracted_from_startScraping_8(chrome_options):
                     print(e)
                     print("Can't save data to database")
         driver.back()
+        sleep(2)
+        driver.find_element(By.CSS_SELECTOR,"select[name=\'rok[]\']").find_element(By.CSS_SELECTOR,f"option[value=\'{publication_date}\']").click()
         publication_date-=1
     # initial_year-=1
     connection.close()
